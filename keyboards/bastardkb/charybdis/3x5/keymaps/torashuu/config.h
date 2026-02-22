@@ -26,30 +26,6 @@
 #    define NO_ACTION_ONESHOT
 #endif // __arm__
 
-#include "raw_hid.h"
-#include "usb_descriptor.h"
-
-// Notify about layer changes
-layer_state_t layer_state_set_user(layer_state_t state) {
-    uint8_t data[RAW_EPSIZE] = {0};
-    data[0] = 0xFF;
-    data[1] = sizeof(layer_state_t);
-    memcpy(&data[2], &default_layer_state, sizeof(layer_state_t));
-    memcpy(&data[2 + sizeof(layer_state_t)], &state, sizeof(layer_state_t));
-    raw_hid_send(data, RAW_EPSIZE);
-    return state;
-}
-
-bool process_record_user(uint16_t keycode, keyrecord_t *record){
-    static uint8_t data[RAW_EPSIZE];
-    data[0] = 0xF1;
-    data[1] = record->event.key.row;
-    data[2] = record->event.key.col;
-    data[3] = record->event.pressed ? 1 : 0;
-    raw_hid_send(data, RAW_EPSIZE);
-    return true;
-}
-
 /* Charybdis-specific features. */
 
 #ifdef POINTING_DEVICE_ENABLE
